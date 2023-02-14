@@ -2,3 +2,6 @@ numpy==1.22.3
 pandas==1.4.1
 ulid==1.1
 boto3==1.21.19
+fsspec==2022.11.0
+s3fs==0.4.0
+pytz==2021.1
