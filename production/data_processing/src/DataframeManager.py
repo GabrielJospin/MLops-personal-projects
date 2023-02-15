@@ -27,7 +27,8 @@ class DataframeManager:
                 file_manager.save(new_df, new_path)
                 file_manager.move_to_archive(file, proc, job_execution_id)
                 file_manager.remove(landed_file.key)
-                process_file.append(f's3://{landed_file.bucket_name}/{landed_file.key}')
+                process_file.append(landed_file)
+        return process_file
 
     @staticmethod
     def get_meta(file_type, file_manager):
@@ -55,13 +56,14 @@ class DataframeManager:
                 col_in.append(name)
             else:
                 col_out.append(name)
-
         X = df.copy()
+        X = self.norm(X, type_norm=method_of_normalization)
         for c in col_out:
             X.pop(c)
         y = df[col_out]
 
         new_df = pd.merge(left=X, right=y, left_index=True, right_index=True)
+        print(np.array(new_df))
         return new_df
 
     def norm(self, df, type_norm="normalization"):
@@ -96,8 +98,6 @@ class DataframeManager:
         dataset = pd.merge(dataset, new, left_index=True, right_index=True)
         return dataset
 
-        pass
-
     def clean_discrete(self, df, name):
         return self.inputer(df, name, "median")
 
@@ -108,7 +108,7 @@ class DataframeManager:
     def clean_binary(df, name):
         options = df[name].unique()
         for i, option in enumerate(options):
-            df[df[name] == option] = i
+            df[name][df[name] == option] = i
         return df
 
     @staticmethod
